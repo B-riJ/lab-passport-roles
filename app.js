@@ -8,10 +8,16 @@ const hbs          = require('hbs');
 const mongoose     = require('mongoose');
 const logger       = require('morgan');
 const path         = require('path');
-
+const User         = require('./models/user')
+const passport       = require("passport");
+const LocalStrategy  = require("passport-local").Strategy;
+const session        = require("express-session");
+const bcrypt        =require('bcrypt');
+//added to run passport
 
 mongoose.Promise = Promise;
 mongoose
+// database must match /lab-passport-roles
   .connect('mongodb://localhost/lab-passport-roles', {useMongoClient: true})
   .then(() => {
     console.log('Connected to Mongo!')
@@ -47,12 +53,20 @@ app.use(favicon(path.join(__dirname, 'public', 'images', 'favicon.ico')));
 
 
 // default value for title local
+//available on all pages
 app.locals.title = 'Express - Generated with IronGenerator';
 
+//return here to complete passport code
 
+
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 const index = require('./routes/index');
 app.use('/', index);
+const authRoutes = require('./routes/loginRouter');
+app.use('/', authRoutes)
 
 
 module.exports = app;
